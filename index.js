@@ -2,8 +2,10 @@
 const fs = require("fs")
 const inquirer = require("inquirer")
 const generateMarkdown = require("./generateMarkdown")
+const fileName = "README.md"
 // Create an array of questions for user input
-const questions = [
+const questions = () => {
+    return inquirer.prompt([
     {
         type: "input",
         message: "What is your GitHub username?",
@@ -72,26 +74,25 @@ const questions = [
         message: "What if there is an issue with the app?",
         name: "issues",
     },
-    
+]);
 
-];
+};
 
 // Create a function to write README file
 function writeToFile(fileName, data) {
-    fs.writeFile(fileName, data, err => {
+    fs.writeFile(fileName, generateMarkdown(data), err => {
         if (err) {
             return console.log(err);
         }
-        console.log("Success! Your Markdown file "+fileName+" has been created!")
+        console.log("Success! Your Markdown file "+data.projName+" has been created!")
     });
 }
 
 // TODO: Create a function to initialize app
 async function init() {
-    inquirer.prompt(questions)
-    .then(function(data){
-        writeToFile("newREADME.md", generateMarkdown(data));
-    })
+    questions()
+    .then((data) => writeToFile("README.md", data))
+    .catch((err) => console.error(err));
 }
 
 // Function call to initialize app
